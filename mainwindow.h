@@ -2,9 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMap>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -15,7 +19,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void beginSort();
+
 private:
+    QMap<size_t, std::vector<std::vector<QString>>> bucketTree;
     Ui::MainWindow *ui;
+
+    std::vector<QString> sort(std::vector<QString> &arr, int start, int end, QStandardItem *parent);
 };
 #endif // MAINWINDOW_H

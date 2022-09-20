@@ -26,6 +26,6 @@ private:
     QMap<size_t, std::vector<std::vector<QString>>> bucketTree;
     Ui::MainWindow *ui;
 
-    std::vector<QString> sort(std::vector<QString> &arr, int start, int end, QStandardItem *parent);
+    std::vector<QString> sort(std::vector<QString> &arr, int start, int end);
 };
 #endif // MAINWINDOW_H

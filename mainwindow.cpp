@@ -12,17 +12,22 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton, &QPushButton::pressed, this, &MainWindow::beginSort);
 }
 
+int MainWindow::getChatAt(QString const &str, int id) const
+{
+    return str.size() > id ? str[id].unicode() : -1;
+}
+
 std::vector<QString> MainWindow::sort(std::vector<QString> &array, int start, int end)
 {
     std::vector<QString> result;
-    std::array<std::vector<QString>, 255> buckets;
+    std::array<std::vector<QString>, 256> buckets;
     if (start >= end)
     {
         return array;
     }
     for (QString const &str : array)
     {
-        buckets[str.at(start).unicode()].push_back(str);
+        buckets[getChatAt(str, start) + 1].push_back(str);
     }
     for (std::vector<QString> &bucket : buckets)
     {
@@ -42,9 +47,9 @@ std::vector<QString> MainWindow::sort(std::vector<QString> &array, int start, in
 
 void MainWindow::beginSort()
 {
-
     QString text = ui->plainTextEdit->toPlainText();
     QStringList words = text.split(",");
+    words.replaceInStrings(QRegExp(" +"), "");
     ui->resultLabel->clear();
     std::vector<QString> array = words.toVector().toStdVector();
     array = sort(array, 0, ui->spinBox->value());
@@ -52,25 +57,6 @@ void MainWindow::beginSort()
     {
         ui->resultLabel->setText(ui->resultLabel->text() + str + ", ");
     }
-
-    QStandardItemModel *model = new QStandardItemModel();
-    int layer = 0;
-    for (auto const &layers : bucketTree)
-    {
-        QStandardItem *layerItem = new QStandardItem(QString::number(layer++));
-        for (auto const &bucket : layers)
-        {
-            QString layerStr;
-            for (QString const &str : bucket)
-            {
-                layerStr += str + ", ";
-            }
-            layerItem->appendRow(new QStandardItem(layerStr));
-        }
-        model->appendRow(layerItem);
-    }
-
-    ui->treeView->setModel(model);
 }
 
 MainWindow::~MainWindow()

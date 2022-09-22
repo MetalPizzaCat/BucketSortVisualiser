@@ -7,30 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>467</width>
-    <height>600</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTreeView" name="treeView">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>260</y>
-      <width>441</width>
-      <height>281</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPlainTextEdit" name="plainTextEdit">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>30</y>
       <width>441</width>
-      <height>141</height>
+      <height>121</height>
      </rect>
     </property>
    </widget>
@@ -60,27 +50,40 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>90</x>
       <y>170</y>
-      <width>58</width>
+      <width>161</width>
       <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Длина для сортировки</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resultLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>200</y>
+      <width>421</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QLabel" name="resultLabel">
+   <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>220</y>
-      <width>421</width>
+      <x>10</x>
+      <y>10</y>
+      <width>58</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>Входные данные</string>
     </property>
    </widget>
   </widget>

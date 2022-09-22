@@ -23,6 +23,8 @@ private slots:
     void beginSort();
 
 private:
+    int getChatAt(QString const &, int) const;
+
     QMap<size_t, std::vector<std::vector<QString>>> bucketTree;
     Ui::MainWindow *ui;
 

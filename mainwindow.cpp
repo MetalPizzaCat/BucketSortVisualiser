@@ -4,6 +4,8 @@
 #include <QStringList>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QDebug>
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -17,32 +19,48 @@ int MainWindow::getChatAt(QString const &str, int id) const
     return str.size() > id ? str[id].unicode() : -1;
 }
 
-std::vector<QString> MainWindow::sort(std::vector<QString> &array, int start, int end)
+void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth)
 {
-    std::vector<QString> result;
     std::array<std::vector<QString>, 256> buckets;
-    if (start >= end)
+    if (end <= start || depth > end)
     {
-        return array;
+        return;
+    }
+    for (int i = start; i < std::min(end, (int)array.size()); i++)
+    {
+        buckets[getChatAt(array[i], depth) + 1].push_back(array[i]);
+    }
+
+    int i = start;
+    for (std::vector<QString> const &bucket : buckets)
+    {
+        if (!bucket.empty())
+        {
+            for (QString const &str : bucket)
+            {
+                array[i] = str;
+                i++;
+            }
+        }
     }
     for (QString const &str : array)
     {
-        buckets[getChatAt(str, start) + 1].push_back(str);
+        qInfo() << str;
     }
-    for (std::vector<QString> &bucket : buckets)
+    qInfo() << "\n";
+    int sortOffset = start;
+
+    bucketTree[depth] = std::vector<std::vector<QString>>();
+    bucketTree[depth].push_back(array);
+    for (int r = 0; r < 255; r++)
     {
-        if (bucket.size() > 1)
+        if (!buckets[r].empty())
         {
-            std::vector<QString> res = sort(bucket, start + 1, end);
-            result.insert(result.end(), res.begin(), res.end());
-        }
-        else
-        {
-            result.insert(result.end(), bucket.begin(), bucket.end());
+            //qInfo() << "Sorting from " << sortOffset << " to " << sortOffset + (int)buckets[r].size() << " at " << depth + 1;
+            sort(array, sortOffset, sortOffset + (int)buckets[r].size(), depth + 1);
+            sortOffset += buckets[r].size();
         }
     }
-    bucketTree[start].push_back(result);
-    return result;
 }
 
 void MainWindow::beginSort()
@@ -53,7 +71,7 @@ void MainWindow::beginSort()
     words.replaceInStrings(QRegExp(" +"), "");
     ui->resultLabel->clear();
     std::vector<QString> array = words.toVector().toStdVector();
-    array = sort(array, 0, ui->spinBox->value());
+    sort(array, 0, ui->spinBox->value(), 0);
     for (QString const &str : array)
     {
         ui->resultLabel->setText(ui->resultLabel->text() + str + ", ");
@@ -64,8 +82,7 @@ void MainWindow::beginSort()
         QStandardItem *layerItem = new QStandardItem(QString::number(layer));
         for (std::vector<QString> const &bucket : buckets)
         {
-            QChar ch = bucket[0][(int)layer];
-            QStandardItem *bucketItem = new QStandardItem(ch);
+            QStandardItem *bucketItem = new QStandardItem("ello");
             for (QString const &str : bucket)
             {
                 bucketItem->appendRow(new QStandardItem(str));
@@ -81,4 +98,4 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-// uwu,ahooha,ahhoga,ahooga,bazinga,eheh
+// uwu,ahcoha,ahboga,ahaoga,bazinga,eheh

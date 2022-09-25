@@ -28,6 +28,6 @@ private:
     std::map<size_t, std::vector<std::vector<QString>>> bucketTree;
     Ui::MainWindow *ui;
 
-    std::vector<QString> sort(std::vector<QString> &arr, int start, int end);
+    void sort(std::vector<QString> &arr, int start, int end, int depth);
 };
 #endif // MAINWINDOW_H

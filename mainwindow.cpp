@@ -33,7 +33,7 @@ std::vector<QString> MainWindow::sort(std::vector<QString> &array, int start, in
     {
         if (bucket.size() > 1)
         {
-            auto res = sort(bucket, start + 1, end);
+            std::vector<QString> res = sort(bucket, start + 1, end);
             result.insert(result.end(), res.begin(), res.end());
         }
         else
@@ -47,8 +47,9 @@ std::vector<QString> MainWindow::sort(std::vector<QString> &array, int start, in
 
 void MainWindow::beginSort()
 {
+
     QString text = ui->plainTextEdit->toPlainText();
-    QStringList words = text.split(",");
+    QStringList words = text.split(QRegExp("[,|;| ]"));
     words.replaceInStrings(QRegExp(" +"), "");
     ui->resultLabel->clear();
     std::vector<QString> array = words.toVector().toStdVector();
@@ -57,6 +58,22 @@ void MainWindow::beginSort()
     {
         ui->resultLabel->setText(ui->resultLabel->text() + str + ", ");
     }
+    QStandardItemModel *model = new QStandardItemModel();
+    for (auto const &[layer, buckets] : bucketTree)
+    {
+        QStandardItem *layerItem = new QStandardItem(QString::number(layer));
+        for (std::vector<QString> const &bucket : buckets)
+        {
+            QStandardItem *bucketItem = new QStandardItem(QString::number(layer));
+            for (QString const &str : bucket)
+            {
+                bucketItem->appendRow(new QStandardItem(str));
+            }
+            layerItem->appendRow(bucketItem);
+        }
+        model->appendRow(layerItem);
+    }
+    ui->treeView->setModel(model);
 }
 
 MainWindow::~MainWindow()

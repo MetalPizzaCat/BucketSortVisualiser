@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QMap>
+#include <map>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -25,7 +25,7 @@ private slots:
 private:
     int getChatAt(QString const &, int) const;
 
-    QMap<size_t, std::vector<std::vector<QString>>> bucketTree;
+    std::map<size_t, std::vector<std::vector<QString>>> bucketTree;
     Ui::MainWindow *ui;
 
     std::vector<QString> sort(std::vector<QString> &arr, int start, int end);

@@ -64,7 +64,8 @@ void MainWindow::beginSort()
         QStandardItem *layerItem = new QStandardItem(QString::number(layer));
         for (std::vector<QString> const &bucket : buckets)
         {
-            QStandardItem *bucketItem = new QStandardItem(QString::number(layer));
+            QChar ch = bucket[0][(int)layer];
+            QStandardItem *bucketItem = new QStandardItem(ch);
             for (QString const &str : bucket)
             {
                 bucketItem->appendRow(new QStandardItem(str));
@@ -80,3 +81,4 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+// uwu,ahooha,ahhoga,ahooga,bazinga,eheh

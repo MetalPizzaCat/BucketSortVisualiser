@@ -52,14 +52,11 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
     qInfo() << "\n";
     int sortOffset = start;
 
-    qInfo() << depthString[depth];
-    if (!depthString[depth].isEmpty())
+    for (QString const &str : array)
     {
-        for (QString const &str : array)
-        {
-            depthString[depth] += str + ", ";
-        }
+        depthString[depth] += str + ", ";
     }
+    qInfo() << depthString[depth];
     for (std::vector<QString> const &bucket : buckets)
     {
         if (!bucket.empty())
@@ -137,4 +134,4 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-// uwu,ahcoha,ahboga,ahaoga,bazinga,eheh
+// ahcoha,ahboga,ahaoga,bazinga,eheh

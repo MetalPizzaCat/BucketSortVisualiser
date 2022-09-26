@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 #include <map>
+#include <memory>
+
+#include <QStandardItemModel>
+#include <QStandardItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -28,6 +32,9 @@ private:
     std::map<size_t, std::vector<std::vector<QString>>> bucketTree;
     std::map<size_t, QString> depthString;
     Ui::MainWindow *ui;
+
+    QStandardItemModel *treeModel = nullptr;
+    std::vector<QStandardItem *> treeElements;
 
     void sort(std::vector<QString> &arr, int start, int end, int depth, int maxDepth);
 };

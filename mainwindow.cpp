@@ -2,11 +2,13 @@
 #include "./ui_mainwindow.h"
 #include <array>
 #include <QStringList>
-#include <QStandardItemModel>
-#include <QStandardItem>
 #include <QDebug>
 #include <algorithm>
+#include <QFile>
+#include <QTextStream>
 
+#define DISPLAY_VISUALIZATION_TREE
+#define WRITE_TO_FILE
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -51,6 +53,13 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
     int sortOffset = start;
 
     qInfo() << depthString[depth];
+    if (!depthString[depth].isEmpty())
+    {
+        for (QString const &str : array)
+        {
+            depthString[depth] += str + ", ";
+        }
+    }
     for (std::vector<QString> const &bucket : buckets)
     {
         if (!bucket.empty())
@@ -66,33 +75,40 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
             sortOffset += buckets[r].size();
         }
     }
-
-    if (!depthString[depth].isEmpty())
-    {
-        for (QString const &str : array)
-        {
-            depthString[depth] += str + ", ";
-        }
-    }
 }
 
 void MainWindow::beginSort()
 {
-
+#ifdef DISPLAY_VISUALIZATION_TREE
+    if (treeModel)
+    {
+        for (int i = 0; i < treeElements.size(); i++)
+        {
+            delete treeElements[i];
+        }
+        delete treeModel;
+        treeElements.clear();
+        bucketTree.clear();
+    }
+#endif
     QString text = ui->plainTextEdit->toPlainText();
     QStringList words = text.split(QRegExp("[,|;| ]"));
     words.replaceInStrings(QRegExp(" +"), "");
     ui->resultLabel->clear();
     std::vector<QString> array = words.toVector().toStdVector();
     sort(array, 0, (int)array.size(), 0, ui->spinBox->value() - 1);
+
     for (QString const &str : array)
     {
         ui->resultLabel->setText(ui->resultLabel->text() + str + ", ");
     }
-    QStandardItemModel *model = new QStandardItemModel();
+
+#ifdef DISPLAY_VISUALIZATION_TREE
+    treeModel = new QStandardItemModel();
     for (auto const &[layer, buckets] : bucketTree)
     {
         QStandardItem *layerItem = new QStandardItem(QString::number(layer) + ": " + depthString[layer]);
+        treeElements.push_back(layerItem);
         int bucketCount = 0;
         for (std::vector<QString> const &bucket : buckets)
         {
@@ -103,9 +119,18 @@ void MainWindow::beginSort()
             }
             layerItem->appendRow(bucketItem);
         }
-        model->appendRow(layerItem);
+        treeModel->appendRow(layerItem);
     }
-    ui->treeView->setModel(model);
+    ui->treeView->setModel(treeModel);
+#endif
+#ifdef WRITE_TO_FILE
+    QFile file("./out.txt");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QTextStream out(&file);
+        out << ui->resultLabel->text();
+    }
+#endif
 }
 
 MainWindow::~MainWindow()

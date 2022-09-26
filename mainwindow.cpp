@@ -19,10 +19,10 @@ int MainWindow::getChatAt(QString const &str, int id) const
     return str.size() > id ? str[id].unicode() : -1;
 }
 
-void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth)
+void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth, int maxDepth)
 {
     std::array<std::vector<QString>, 256> buckets;
-    if (end <= start || depth > end)
+    if (end <= start || depth > maxDepth || end - start < 2)
     {
         return;
     }
@@ -50,15 +50,28 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
     qInfo() << "\n";
     int sortOffset = start;
 
-    bucketTree[depth] = std::vector<std::vector<QString>>();
-    bucketTree[depth].push_back(array);
+    qInfo() << depthString[depth];
+    for (std::vector<QString> const &bucket : buckets)
+    {
+        if (!bucket.empty())
+        {
+            bucketTree[depth].push_back(bucket);
+        }
+    }
     for (int r = 0; r < 255; r++)
     {
         if (!buckets[r].empty())
         {
-            //qInfo() << "Sorting from " << sortOffset << " to " << sortOffset + (int)buckets[r].size() << " at " << depth + 1;
-            sort(array, sortOffset, sortOffset + (int)buckets[r].size(), depth + 1);
+            sort(array, sortOffset, sortOffset + (int)buckets[r].size(), depth + 1, maxDepth);
             sortOffset += buckets[r].size();
+        }
+    }
+
+    if (!depthString[depth].isEmpty())
+    {
+        for (QString const &str : array)
+        {
+            depthString[depth] += str + ", ";
         }
     }
 }
@@ -71,7 +84,7 @@ void MainWindow::beginSort()
     words.replaceInStrings(QRegExp(" +"), "");
     ui->resultLabel->clear();
     std::vector<QString> array = words.toVector().toStdVector();
-    sort(array, 0, ui->spinBox->value(), 0);
+    sort(array, 0, (int)array.size(), 0, ui->spinBox->value() - 1);
     for (QString const &str : array)
     {
         ui->resultLabel->setText(ui->resultLabel->text() + str + ", ");
@@ -79,10 +92,11 @@ void MainWindow::beginSort()
     QStandardItemModel *model = new QStandardItemModel();
     for (auto const &[layer, buckets] : bucketTree)
     {
-        QStandardItem *layerItem = new QStandardItem(QString::number(layer));
+        QStandardItem *layerItem = new QStandardItem(QString::number(layer) + ": " + depthString[layer]);
+        int bucketCount = 0;
         for (std::vector<QString> const &bucket : buckets)
         {
-            QStandardItem *bucketItem = new QStandardItem("ello");
+            QStandardItem *bucketItem = new QStandardItem(QString::number(bucketCount++));
             for (QString const &str : bucket)
             {
                 bucketItem->appendRow(new QStandardItem(str));

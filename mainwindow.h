@@ -26,8 +26,9 @@ private:
     int getChatAt(QString const &, int) const;
 
     std::map<size_t, std::vector<std::vector<QString>>> bucketTree;
+    std::map<size_t, QString> depthString;
     Ui::MainWindow *ui;
 
-    void sort(std::vector<QString> &arr, int start, int end, int depth);
+    void sort(std::vector<QString> &arr, int start, int end, int depth, int maxDepth);
 };
 #endif // MAINWINDOW_H

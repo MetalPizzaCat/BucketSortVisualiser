@@ -45,18 +45,13 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
             }
         }
     }
-    for (QString const &str : array)
-    {
-        qInfo() << str;
-    }
-    qInfo() << "\n";
     int sortOffset = start;
-
+#ifdef DISPLAY_VISUALIZATION_TREE
     for (QString const &str : array)
     {
         depthString[depth] += str + ", ";
     }
-    qInfo() << depthString[depth];
+
     for (std::vector<QString> const &bucket : buckets)
     {
         if (!bucket.empty())
@@ -64,6 +59,7 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
             bucketTree[depth].push_back(bucket);
         }
     }
+#endif
     for (int r = 0; r < 255; r++)
     {
         if (!buckets[r].empty())

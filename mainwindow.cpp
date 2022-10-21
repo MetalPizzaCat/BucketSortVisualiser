@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <algorithm>
 #include <QFile>
+#include <map>
 #include <QTextStream>
 
 #define DISPLAY_VISUALIZATION_TREE
@@ -23,7 +24,7 @@ int MainWindow::getChatAt(QString const &str, int id) const
 
 void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth, int maxDepth)
 {
-    std::array<std::vector<QString>, 256> buckets;
+    std::map<int, std::vector<QString>> buckets;
     if (end <= start || depth > maxDepth || end - start < 2)
     {
         return;
@@ -34,7 +35,7 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
     }
 
     int i = start;
-    for (std::vector<QString> const &bucket : buckets)
+    for (auto &[id, bucket] : buckets)
     {
         if (!bucket.empty())
         {
@@ -52,7 +53,7 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
         depthString[depth] += str + ", ";
     }
 
-    for (std::vector<QString> const &bucket : buckets)
+    for (auto const &[id, bucket] : buckets)
     {
         if (!bucket.empty())
         {
@@ -60,12 +61,16 @@ void MainWindow::sort(std::vector<QString> &array, int start, int end, int depth
         }
     }
 #endif
-    for (int r = 0; r < 255; r++)
+    for (auto const &[id, bucket] : buckets)
     {
-        if (!buckets[r].empty())
+        if (id == 0)//ignore this one
         {
-            sort(array, sortOffset, sortOffset + (int)buckets[r].size(), depth + 1, maxDepth);
-            sortOffset += buckets[r].size();
+            continue;
+        }
+        if (!bucket.empty())
+        {
+            sort(array, sortOffset, sortOffset + (int)bucket.size(), depth + 1, maxDepth);
+            sortOffset += bucket.size();
         }
     }
 }
